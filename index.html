@@ -393,14 +393,14 @@
                 shortcutsContainer.appendChild(section);
             });
 
-            // 검색 또는 필터 결과가 아무것도 없을 때
+            // 검색 또는 필터 결과가 아무것도 없을 때 (여백, 색상 수정)
             if (!hasVisibleItems) {
                 const emptyState = document.createElement('div');
-                emptyState.className = 'flex flex-col items-center justify-center h-48 text-gray-400 dark:text-gray-500 fade-enter fade-enter-active absolute inset-0';
+                emptyState.className = 'flex flex-col items-center justify-center py-16 sm:py-24 text-gray-500 dark:text-gray-400 fade-enter fade-enter-active w-full';
                 emptyState.innerHTML = `
-                    <i data-lucide="${searchQuery ? 'search-x' : 'filter-x'}" class="w-12 h-12 mb-3 opacity-50"></i>
-                    <p class="font-medium">${searchQuery ? `'${searchQuery}'에 대한 검색 결과가 없습니다.` : '선택된 카테고리가 없습니다.'}</p>
-                    <p class="text-sm mt-1">${searchQuery ? '다른 검색어를 입력해 보세요.' : '상단의 칩을 클릭하여 단축키를 확인하세요.'}</p>
+                    <i data-lucide="${searchQuery ? 'search-x' : 'filter-x'}" class="w-16 h-16 mb-4 opacity-50"></i>
+                    <p class="text-lg font-medium">${searchQuery ? `'${searchQuery}'에 대한 검색 결과가 없습니다.` : '선택된 카테고리가 없습니다.'}</p>
+                    <p class="text-sm mt-2 opacity-80">${searchQuery ? '다른 검색어를 입력해 보세요.' : '상단의 칩을 클릭하여 단축키를 확인하세요.'}</p>
                 `;
                 shortcutsContainer.appendChild(emptyState);
             }
