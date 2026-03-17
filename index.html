@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>노션 단축키 백과사전</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', "Liberation Mono", "Courier New", 'monospace'],
+                    },
+                    colors: {
+                        notionDark: '#303030', // 다크모드 배경색
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; }
+        
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #555; }
+        ::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+        
+        /* 키보드 키 UI 스타일 */
+        .kbd-key {
+            box-shadow: 0 2px 0 0 rgba(0,0,0,0.1);
+        }
+        .dark .kbd-key {
+            box-shadow: 0 2px 0 0 rgba(0,0,0,0.3);
+        }
+
+        /* 트랜지션 유틸리티 */
+        .fade-enter { opacity: 0; transform: translateY(5px); }
+        .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 300ms, transform 300ms; }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-[#1e1e1e] text-gray-800 dark:text-gray-200 p-4 sm:p-8 transition-colors duration-200 min-h-screen flex justify-center items-start">
+
+    <!-- 메인 위젯 컨테이너 -->
+    <div class="max-w-4xl w-full bg-white dark:bg-notionDark rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col h-[calc(100vh-2rem)] sm:h-auto sm:max-h-[90vh]">
+        
+        <!-- Header & Search & Chips -->
+        <div class="p-5 sm:p-6 border-b border-gray-100 dark:border-gray-700 flex flex-col gap-4 bg-white/95 dark:bg-notionDark/95 backdrop-blur z-20 shrink-0">
+            <!-- 상단 타이틀 영역 -->
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-bold flex items-center gap-2">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" alt="Notion Logo" class="w-7 h-7 rounded">
+                        노션 단축키 백과사전
+                    </h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">작업 효율을 극대화하는 모든 단축키와 명령어</p>
+                </div>
+                <button id="theme-toggle" class="p-2.5 rounded-xl bg-gray-100 dark:bg-[#404040] hover:bg-gray-200 dark:hover:bg-[#4a4a4a] transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500" title="다크/라이트 모드 전환 (Ctrl+Shift+L)">
+                    <i data-lucide="moon" class="w-5 h-5 dark:hidden text-gray-600"></i>
+                    <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-yellow-400"></i>
+                </button>
+            </div>
+
+            <!-- 검색 바 (Search Input) -->
+            <div class="relative w-full">
+                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500"></i>
+                <input type="text" id="search-input" placeholder="기능이나 단축키 검색... (예: 굵게, 표, /, Ctrl)" 
+                    class="w-full bg-gray-50 dark:bg-[#252525] text-sm text-gray-800 dark:text-gray-200 rounded-lg pl-9 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow border border-gray-200 dark:border-gray-600 dark:focus:border-gray-500">
+                <button id="clear-search" class="absolute right-3 top-1/2 transform -translate-y-1/2 hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Chips Container -->
+            <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide flex-nowrap" id="chips-container">
+                <!-- 칩들이 JS를 통해 렌더링됩니다 -->
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="p-5 sm:p-6 space-y-8 overflow-y-auto grow bg-white dark:bg-notionDark relative" id="shortcuts-container">
+            <!-- 단축키 섹션들이 JS를 통해 렌더링됩니다 -->
+        </div>
+        
+        <!-- Footer -->
+        <div class="p-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-[#282828] shrink-0">
+            <span>💡 팁: 검색 바를 이용해 방대한 단축키를 즉시 찾아보세요.</span>
+            <button id="select-all-btn" class="hover:text-gray-600 dark:hover:text-gray-300 transition-colors underline underline-offset-2">모든 카테고리 보기</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. 방대한 단축키 데이터 세트 (공식 문서 전체 반영)
+        const shortcutData = [
+            {
+                id: 'popular',
+                title: '많이 쓰이는 단축키',
+                icon: 'star',
+                type: 'list',
+                items: [
+                    { label: '새 페이지 만들기', desc: '데스크톱 앱 전용', keys: ['Ctrl/Cmd', 'N'] },
+                    { label: '새 창 열기', desc: '데스크톱 앱 전용', keys: ['Ctrl/Cmd', 'Shift', 'N'] },
+                    { label: '검색창 열기', keys: ['Ctrl/Cmd', 'P'] },
+                    { label: '이전/다음 페이지로 이동', keys: ['Ctrl/Cmd', '[ / ]'] },
+                    { label: '다크 모드 켜기/끄기', keys: ['Ctrl/Cmd', 'Shift', 'L'] },
+                ]
+            },
+            {
+                id: 'markdown',
+                title: '마크다운 블록 (입력 후 스페이스바)',
+                icon: 'layout-grid',
+                type: 'grid',
+                items: [
+                    { label: '체크박스 (To-do)', prefix: '[]', suffix: '스페이스바' },
+                    { label: '글머리 기호 (Bullet)', prefix: '- , * , +', suffix: '스페이스바' },
+                    { label: '번호 매기기 (Number)', prefix: '1.', suffix: '스페이스바' },
+                    { label: '토글 목록 (Toggle)', prefix: '>', suffix: '스페이스바' },
+                    { label: '인용구 (Quote)', prefix: '"', suffix: '스페이스바' },
+                    { label: '구분선 (Divider)', prefix: '---', suffix: '엔터 또는 스페이스바' },
+                    { label: '제목 1, 2, 3 (Heading)', prefix: '#, ##, ###', suffix: '스페이스바' },
+                ]
+            },
+            {
+                id: 'format',
+                title: '텍스트 서식 지정',
+                icon: 'pen-line',
+                type: 'list',
+                items: [
+                    { label: '굵게 (Bold)', keys: ['Ctrl/Cmd', 'B'] },
+                    { label: '기울임꼴 (Italic)', keys: ['Ctrl/Cmd', 'I'] },
+                    { label: '밑줄 (Underline)', keys: ['Ctrl/Cmd', 'U'] },
+                    { label: '취소선 (Strikethrough)', desc: '텍스트 드래그 후', keys: ['Ctrl/Cmd', 'Shift', 'S'] },
+                    { label: '인라인 코드 (Code)', desc: '텍스트 드래그 후', keys: ['Ctrl/Cmd', 'E'] },
+                    { label: '하이퍼링크 추가', desc: '텍스트 드래그 후', keys: ['Ctrl/Cmd', 'K'] },
+                    { label: '마지막으로 사용한 텍스트 색상 적용', keys: ['Ctrl/Cmd', 'Shift', 'H'] },
+                    { label: '들여쓰기', keys: ['Tab'] },
+                ]
+            },
+            {
+                id: 'block',
+                title: '블록 선택 및 편집',
+                icon: 'blocks',
+                type: 'list',
+                items: [
+                    { label: '현재 블록 선택 및 해제', keys: ['Esc'] },
+                    { label: '블록 전체 선택', keys: ['Ctrl/Cmd', 'A'] },
+                    { label: '위/아래 블록 추가 선택', keys: ['Shift', '↑/↓'] },
+                    { label: '선택한 블록 위/아래로 이동', keys: ['Ctrl/Cmd', 'Shift', '↑/↓'] },
+                    { label: '선택한 블록 복제', keys: ['Ctrl/Cmd', 'D'] },
+                    { label: '선택한 블록 삭제', keys: ['Backspace / Delete'] },
+                    { label: '블록 유형 변경 (Turn into)', keys: ['Ctrl/Cmd', '/'] },
+                    { label: '토글/페이지 열기 및 닫기', keys: ['Ctrl/Cmd', 'Enter'] },
+                    { label: '페이지를 새 창(탭)에서 열기', keys: ['Ctrl/Cmd', 'Shift', 'Enter'] },
+                ]
+            },
+            {
+                id: 'ui',
+                title: 'UI 및 네비게이션',
+                icon: 'panel-left',
+                type: 'list',
+                items: [
+                    { label: '사이드바 열기/닫기', keys: ['Ctrl/Cmd', '\\'] },
+                    { label: '한 단계 위 상위 페이지로 이동', desc: '브라우저 충돌 주의', keys: ['Ctrl/Cmd', 'Shift', 'U'] },
+                    { label: '현재 페이지 이동 (Move to)', keys: ['Ctrl/Cmd', 'Shift', 'P'] },
+                    { label: '모든 토글 열기/닫기', keys: ['Ctrl/Cmd', 'Alt/Opt', 'T'] },
+                    { label: '화면 확대/축소', keys: ['Ctrl/Cmd', '+ / -'] },
+                ]
+            },
+            {
+                id: 'slash',
+                title: '슬래시 (/) 명령어',
+                icon: 'terminal',
+                type: 'grid',
+                items: [
+                    { label: '텍스트 (기본)', prefix: '/text', suffix: '엔터' },
+                    { label: '새 페이지 생성', prefix: '/page', suffix: '엔터' },
+                    { label: '글머리 기호 리스트', prefix: '/bullet', suffix: '엔터' },
+                    { label: '번호 매기기 리스트', prefix: '/num', suffix: '엔터' },
+                    { label: '체크박스', prefix: '/todo', suffix: '엔터' },
+                    { label: '토글 리스트', prefix: '/toggle', suffix: '엔터' },
+                    { label: '구분선', prefix: '/divider', suffix: '엔터' },
+                    { label: '인용구', prefix: '/quote', suffix: '엔터' },
+                    { label: '제목 1, 2, 3', prefix: '/h1, /h2, /h3', suffix: '엔터' },
+                    { label: '콜아웃 (강조 박스)', prefix: '/callout', suffix: '엔터' },
+                    { label: '인라인 수학 공식', prefix: '/math', suffix: '엔터' },
+                    { label: '이미지 업로드', prefix: '/image', suffix: '엔터' },
+                    { label: '파일 업로드', prefix: '/file', suffix: '엔터' },
+                    { label: '표 (Table) 생성', prefix: '/table', suffix: '엔터' },
+                    { label: '데이터베이스 (보드 뷰)', prefix: '/board', suffix: '엔터' },
+                ]
+            },
+            {
+                id: 'mention',
+                title: '@ 멘션 및 리마인더',
+                icon: 'at-sign',
+                type: 'grid',
+                items: [
+                    { label: '오늘 날짜 삽입', prefix: '@오늘', suffix: '엔터' },
+                    { label: '내일 날짜 삽입', prefix: '@내일', suffix: '엔터' },
+                    { label: '특정 날짜 삽입', prefix: '@[날짜]', suffix: '예: @10월 25일' },
+                    { label: '사용자 태그 및 알림', prefix: '@[이름]', suffix: '예: @홍길동' },
+                    { label: '다른 페이지 링크', prefix: '@[페이지명]', suffix: '페이지 제목 입력' },
+                    { label: '리마인더 (알림) 설정', prefix: '@remind', suffix: '예: @remind tomorrow' },
+                ]
+            }
+        ];
+
+        // 상태 관리
+        let activeCategories = new Set(shortcutData.map(c => c.id)); // 처음엔 모두 활성화
+        let searchQuery = '';
+        let isBannerClosed = localStorage.getItem('hideNotionShortcutBanner') === 'true'; // 배너 닫힘 상태 유지
+
+        // DOM 요소
+        const chipsContainer = document.getElementById('chips-container');
+        const shortcutsContainer = document.getElementById('shortcuts-container');
+        const searchInput = document.getElementById('search-input');
+        const clearSearchBtn = document.getElementById('clear-search');
+        const selectAllBtn = document.getElementById('select-all-btn');
+
+        // 2. 칩 렌더링 함수
+        function renderChips() {
+            chipsContainer.innerHTML = '';
+            
+            shortcutData.forEach(category => {
+                const isActive = activeCategories.has(category.id);
+                
+                const btn = document.createElement('button');
+                btn.className = `whitespace-nowrap px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-1.5 border
+                    ${isActive 
+                        ? 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/40 dark:text-blue-300 dark:border-blue-800/60 shadow-sm' 
+                        : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100 dark:bg-[#333333] dark:text-gray-400 dark:border-gray-600 dark:hover:bg-[#3d3d3d]'
+                    }`;
+                
+                btn.innerHTML = `
+                    <i data-lucide="${category.icon}" class="w-4 h-4 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-400'}"></i>
+                    ${category.title}
+                `;
+                
+                btn.onclick = () => {
+                    if (activeCategories.has(category.id)) {
+                        activeCategories.delete(category.id);
+                    } else {
+                        activeCategories.add(category.id);
+                    }
+                    renderChips();
+                    renderShortcuts();
+                };
+                
+                chipsContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        // 3. 단축키 목록 렌더링 함수 (검색 필터 포함)
+        function renderShortcuts() {
+            shortcutsContainer.innerHTML = '';
+
+            let hasVisibleItems = false;
+
+            // 브라우저 단축키 충돌 안내 배너 (사용자가 닫지 않았을 때만 표시)
+            if (!isBannerClosed) {
+                const alertBanner = document.createElement('div');
+                alertBanner.className = 'mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/30 rounded-xl flex items-start justify-between gap-3 fade-enter fade-enter-active transition-opacity duration-200';
+                alertBanner.innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5"></i>
+                        <div class="text-sm text-amber-800 dark:text-amber-300/90">
+                            <p class="font-bold mb-1">브라우저 및 Windows 환경 참고사항</p>
+                            <p class="leading-relaxed"><kbd class="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/50 rounded font-mono text-[11px] border border-amber-200 dark:border-amber-700">Ctrl</kbd> + <kbd class="px-1 py-0.5 bg-amber-100 dark:bg-amber-900/50 rounded font-mono text-[11px] border border-amber-200 dark:border-amber-700">Shift</kbd> 조합 단축키는 웹 브라우저 자체의 단축키와 겹쳐 작동하지 않을 수 있습니다. 데스크톱 앱 사용을 권장합니다.</p>
+                        </div>
+                    </div>
+                    <button class="close-banner-btn p-1.5 text-amber-500 hover:bg-amber-200/50 dark:text-amber-400 dark:hover:bg-amber-900/50 rounded-lg transition-colors shrink-0" title="안내 배너 닫기">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                `;
+                shortcutsContainer.appendChild(alertBanner);
+
+                // 닫기 버튼 이벤트 리스너 추가
+                alertBanner.querySelector('.close-banner-btn').addEventListener('click', () => {
+                    isBannerClosed = true;
+                    localStorage.setItem('hideNotionShortcutBanner', 'true'); // 로컬 스토리지에 저장하여 유지
+                    
+                    // 부드럽게 사라지는 애니메이션
+                    alertBanner.style.opacity = '0';
+                    setTimeout(() => {
+                        alertBanner.remove();
+                    }, 200);
+                });
+            }
+
+            shortcutData.forEach(category => {
+                // 카테고리가 비활성화 상태면 스킵 (단, 검색 중일 때는 칩 필터 무시하고 전체에서 검색하도록 UX 개선)
+                if (!activeCategories.has(category.id) && searchQuery === '') return;
+
+                // 검색어에 따른 아이템 필터링 로직
+                const filteredItems = category.items.filter(item => {
+                    if (searchQuery === '') return true;
+                    
+                    const searchText = [
+                        item.label, 
+                        item.desc || '', 
+                        item.keys ? item.keys.join(' ') : '', 
+                        item.prefix || '', 
+                        item.suffix || ''
+                    ].join(' ').toLowerCase();
+
+                    return searchText.includes(searchQuery);
+                });
+
+                // 필터링된 결과가 없으면 해당 섹션 렌더링 안함
+                if (filteredItems.length === 0) return;
+                
+                hasVisibleItems = true;
+
+                const section = document.createElement('section');
+                section.className = 'fade-enter fade-enter-active mb-8 last:mb-0';
+
+                // 헤더
+                const header = document.createElement('h2');
+                header.className = 'text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2';
+                header.innerHTML = `<i data-lucide="${category.icon}" class="w-4 h-4"></i>${category.title}`;
+                section.appendChild(header);
+
+                const container = document.createElement('div');
+
+                // 리스트 렌더링
+                if (category.type === 'list') {
+                    container.className = 'space-y-2';
+                    filteredItems.forEach(item => {
+                        const row = document.createElement('div');
+                        row.className = 'flex justify-between items-center p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-[#383838] transition-colors group border border-transparent dark:hover:border-gray-700';
+                        
+                        let keysHtml = item.keys.map((key, index) => {
+                            const isLast = index === item.keys.length - 1;
+                            return `
+                                <kbd class="kbd-key px-2 py-1 bg-white dark:bg-[#404040] border border-gray-200 dark:border-gray-600 rounded-md text-sm font-mono text-gray-700 dark:text-gray-300">${key}</kbd>
+                                ${!isLast ? `<span class="text-gray-400 dark:text-gray-500 self-center text-xs">+</span>` : ''}
+                            `;
+                        }).join('');
+
+                        row.innerHTML = `
+                            <div>
+                                <span class="font-medium text-gray-700 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">${item.label}</span>
+                                ${item.desc ? `<span class="block text-xs text-gray-500 dark:text-gray-400 mt-0.5">${item.desc}</span>` : ''}
+                            </div>
+                            <div class="flex gap-1.5 flex-wrap justify-end pl-4">
+                                ${keysHtml}
+                            </div>
+                        `;
+                        container.appendChild(row);
+                    });
+                } 
+                // 그리드 렌더링
+                else if (category.type === 'grid') {
+                    container.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3';
+                    filteredItems.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = 'p-4 border border-gray-100 dark:border-gray-700 rounded-xl hover:border-blue-200 dark:hover:border-blue-800 bg-gray-50/50 dark:bg-[#383838]/50 transition-colors group h-full flex flex-col justify-between gap-3';
+                        
+                        const prefixes = item.prefix.split(', ').flatMap(p => p.split(' 또는 '));
+                        const prefixHtml = prefixes.map((p, index) => {
+                            const isLast = index === prefixes.length - 1;
+                            return `
+                                <kbd class="kbd-key px-2 py-1 bg-white dark:bg-[#252525] border border-gray-200 dark:border-gray-700 rounded text-sm font-mono text-blue-600 dark:text-blue-400">${p}</kbd>
+                                ${!isLast ? `<span class="text-sm text-gray-400">,</span>` : ''}
+                            `;
+                        }).join(' ');
+
+                        card.innerHTML = `
+                            <div class="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">${item.label}</div>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                ${prefixHtml}
+                                <span class="text-sm text-gray-500 dark:text-gray-400">+ ${item.suffix}</span>
+                            </div>
+                        `;
+                        container.appendChild(card);
+                    });
+                }
+
+                section.appendChild(container);
+                shortcutsContainer.appendChild(section);
+            });
+
+            // 검색 또는 필터 결과가 아무것도 없을 때
+            if (!hasVisibleItems) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'flex flex-col items-center justify-center h-48 text-gray-400 dark:text-gray-500 fade-enter fade-enter-active absolute inset-0';
+                emptyState.innerHTML = `
+                    <i data-lucide="${searchQuery ? 'search-x' : 'filter-x'}" class="w-12 h-12 mb-3 opacity-50"></i>
+                    <p class="font-medium">${searchQuery ? `'${searchQuery}'에 대한 검색 결과가 없습니다.` : '선택된 카테고리가 없습니다.'}</p>
+                    <p class="text-sm mt-1">${searchQuery ? '다른 검색어를 입력해 보세요.' : '상단의 칩을 클릭하여 단축키를 확인하세요.'}</p>
+                `;
+                shortcutsContainer.appendChild(emptyState);
+            }
+
+            lucide.createIcons();
+        }
+
+        // 검색 이벤트 리스너
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.toLowerCase().trim();
+            
+            // 검색어 입력 유무에 따른 X 버튼 표시
+            if (searchQuery.length > 0) {
+                clearSearchBtn.classList.remove('hidden');
+                // 검색 시 카테고리 칩 UI를 흐리게 만들어서 전체 검색 중임을 암시할 수 있음 (옵션)
+            } else {
+                clearSearchBtn.classList.add('hidden');
+            }
+            
+            renderShortcuts();
+        });
+
+        clearSearchBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchQuery = '';
+            clearSearchBtn.classList.add('hidden');
+            searchInput.focus();
+            renderShortcuts();
+        });
+
+        // 모든 카테고리 선택 버튼
+        selectAllBtn.addEventListener('click', () => {
+            activeCategories = new Set(shortcutData.map(c => c.id));
+            searchQuery = '';
+            searchInput.value = '';
+            clearSearchBtn.classList.add('hidden');
+            renderChips();
+            renderShortcuts();
+            shortcutsContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 초기화 실행
+        renderChips();
+        renderShortcuts();
+
+        // 4. 테마 토글 로직
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+        });
+
+        document.addEventListener('keydown', (e) => {
+            // 다크모드 전환 단축키
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'l' || e.key === 'L')) {
+                e.preventDefault();
+                themeToggleBtn.click();
+            }
+            // 검색창 포커스 단축키 (Ctrl + / 또는 Cmd + /) - 보너스 기능
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                // 노션 블록전환 단축키와 겹치지만, 이 웹 앱 내에서는 검색으로 연결
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
